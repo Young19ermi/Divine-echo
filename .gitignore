@@ -1,20 +1,8 @@
-# Node
 node_modules/
-
-# Expo
 .expo/
 dist/
 web-build/
-
-# Logs
 *.log
-
-# OS files
+.env
 .DS_Store
 Thumbs.db
-
-# Environment
-.env
-
-# Windows system folders (IMPORTANT)
-AppData/
