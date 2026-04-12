@@ -12,7 +12,6 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack initialRouteName="user/homes">
-        <Stack.Screen name="index" />
         <Stack.Screen name="home" />
         <Stack.Screen name="modal" />
         <Stack.Screen name="user/homes" />

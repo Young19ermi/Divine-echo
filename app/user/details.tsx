@@ -142,7 +142,17 @@ export default function DetailsScreen() {
                 <View style={styles.actionDivider} />
 
                 <View style={styles.actionRight}>
-                    <TouchableOpacity style={styles.actionIconOnly}>
+                    <TouchableOpacity style={styles.actionIconOnly} onPress={() => {
+                        router.push({
+                            pathname: '/user/library',
+                            params: {
+                                image: 'https://i.pinimg.com/736x/fc/35/01/fc350123f69b59e3c684f9ce18ec9424.jpg',
+                                title: 'PSALM 46:10',
+                                description: '"Be still, and know that I am God." In the modern rhythm of constant motion...',
+                                date: 'OCTOBER 24, 2023'
+                            }
+                        });
+                    }}>
                         <Ionicons name="bookmark" size={22} color="#4A4A48" />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.reflectButton} onPress={() => router.push('/user/notet')}>

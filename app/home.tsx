@@ -6,7 +6,7 @@ export default function home() {
     return (
         <View>
             <Text>Home</Text>
-            <Link href='/modal'>About Page</Link>
+            <Link href='/user/homes'>About Page</Link>
         </View>
     )
 }
