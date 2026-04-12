@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, SafeAreaView, Platform, StatusBar, KeyboardAvoidingView } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { Audio } from 'expo-av';
 
 export default function HomeScreen() {
@@ -11,6 +11,11 @@ export default function HomeScreen() {
 
     const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
+
+    const [note, setNote] = useState('');
+    const [isBold, setIsBold] = useState(false);
+    const [isItalic, setIsItalic] = useState(false);
+    const [isUnderline, setIsUnderline] = useState(false);
 
     async function togglePlayPause() {
         if (!sound) {
@@ -105,24 +110,62 @@ export default function HomeScreen() {
                     {/* Notes Section */}
                     <View style={styles.notesSection}>
                         <Text style={styles.notesTitle}>What is God saying to you?</Text>
-                        <View style={styles.notesSubHeader}>
-                            <Text style={styles.notesSubTitle}>PERSONAL REFLECTION</Text>
-                            <View style={styles.privateContainer}>
-                                <Feather name="lock" size={10} color="#C1C1C1" />
-                                <Text style={styles.privateText}>PRIVATE</Text>
+                        <View style={styles.editorContainer}>
+                            <View style={styles.toolbar}>
+                                <TouchableOpacity style={[styles.toolbarButton, isBold && styles.toolbarButtonActive]} onPress={() => setIsBold(!isBold)}>
+                                    <Feather name="bold" size={16} color={isBold ? "#C59A3F" : "#8A8A8C"} />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.toolbarButton, isItalic && styles.toolbarButtonActive]} onPress={() => setIsItalic(!isItalic)}>
+                                    <Feather name="italic" size={16} color={isItalic ? "#C59A3F" : "#8A8A8C"} />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.toolbarButton, isUnderline && styles.toolbarButtonActive]} onPress={() => setIsUnderline(!isUnderline)}>
+                                    <Feather name="underline" size={16} color={isUnderline ? "#C59A3F" : "#8A8A8C"} />
+                                </TouchableOpacity>
+                                <View style={styles.toolbarDivider} />
+                                <TouchableOpacity style={styles.toolbarButton}>
+                                    <Feather name="list" size={16} color="#8A8A8C" />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.toolbarButton}>
+                                    <Feather name="align-left" size={16} color="#8A8A8C" />
+                                </TouchableOpacity>
                             </View>
-                        </View>
+                            
+                            <View style={styles.inputWrapper}>
+                                <Text style={styles.watermark}>p.</Text>
+                                
+                                <TextInput
+                                    style={[
+                                        styles.editorTextInput,
+                                        isBold && { fontWeight: 'bold' },
+                                        isItalic && { fontStyle: 'italic' },
+                                        isUnderline && { textDecorationLine: 'underline' }
+                                    ]}
+                                    placeholder="Begin typing your heart's echo..."
+                                    placeholderTextColor="#C2C2C2"
+                                    multiline
+                                    textAlignVertical="top"
+                                    value={note}
+                                    onChangeText={setNote}
+                                />
+                            </View>
 
-                        <View style={styles.inputCard}>
-                            <TextInput
-                                style={styles.textInput}
-                                placeholder="Write your reflection here..."
-                                placeholderTextColor="#A1A1A1"
-                                multiline
-                                textAlignVertical="top"
-                            />
-                            <TouchableOpacity style={styles.logNoteButton}>
-                                <Text style={styles.logNoteText}>LOG NOTE</Text>
+                            <TouchableOpacity 
+                                style={styles.saveButtonBox}
+                                onPress={() => {
+                                    if(note.trim().length > 0) {
+                                        router.push({
+                                            pathname: '/user/notes',
+                                            params: {
+                                                noteText: note,
+                                                noteDate: 'TODAY\'S REFLECTION',
+                                                notePrompt: 'What is God saying to you?'
+                                            }
+                                        });
+                                        setNote('');
+                                    }
+                                }}
+                            >
+                                <Text style={styles.saveButtonText}>Save Reflection</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -137,7 +180,7 @@ export default function HomeScreen() {
                         <Ionicons name="home" size={18} color="#C19B36" />
                         <Text style={[styles.tabItemText, styles.tabItemTextActive]}>HOME</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.tabItem}>
+                    <TouchableOpacity style={styles.tabItem} onPress={() => (router.push('/user/library'))}>
                         <Ionicons name="book" size={18} color="#A3A3A3" />
                         <Text style={styles.tabItemText}>LIBRARY</Text>
                     </TouchableOpacity>
@@ -313,59 +356,79 @@ const styles = StyleSheet.create({
         color: '#1A1A1D',
         marginBottom: 12,
     },
-    notesSubHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    notesSubTitle: {
-        fontSize: 11,
-        fontWeight: '700',
-        color: '#8A8A8C',
-        letterSpacing: 1,
-    },
-    privateContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    privateText: {
-        fontSize: 10,
-        fontWeight: '700',
-        color: '#C1C1C1',
-        marginLeft: 6,
-        letterSpacing: 1,
-    },
-    inputCard: {
+    editorContainer: {
         backgroundColor: '#FFFFFF',
         borderRadius: 24,
-        padding: 24,
-        height: 180,
+        borderWidth: 1,
+        borderColor: '#EAE8E0',
+        marginBottom: 28,
+        overflow: 'hidden',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.04,
         shadowRadius: 16,
         elevation: 4,
-        position: 'relative',
     },
-    textInput: {
+    toolbar: {
+        flexDirection: 'row',
+        padding: 12,
+        backgroundColor: '#FCFBFA',
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0EEE5',
+        alignItems: 'center',
+    },
+    toolbarButton: {
+        width: 32,
+        height: 32,
+        borderRadius: 6,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 4,
+    },
+    toolbarButtonActive: {
+        backgroundColor: '#F3EFE6',
+    },
+    toolbarDivider: {
+        width: 1,
+        height: 20,
+        backgroundColor: '#E0DCD3',
+        marginHorizontal: 8,
+    },
+    inputWrapper: {
+        position: 'relative',
+        padding: 10,
+        height: 390,
+    },
+    editorTextInput: {
         flex: 1,
         fontSize: 16,
         color: '#1A1A1D',
+        lineHeight: 26,
+        fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+        zIndex: 2, 
     },
-    logNoteButton: {
+    watermark: {
         position: 'absolute',
-        bottom: 20,
-        right: 20,
-        backgroundColor: '#2A2A28',
-        paddingHorizontal: 24,
-        paddingVertical: 14,
-        borderRadius: 24,
+        bottom: 9,
+        right: 10,
+        fontSize: 160,
+        fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+        fontStyle: 'italic',
+        fontWeight: 'bold',
+        color: '#F8F6F0',
+        zIndex: 1,
     },
-    logNoteText: {
+    saveButtonBox: {
+        backgroundColor: '#C59A3F',
+        borderBottomLeftRadius: 24,
+        borderBottomRightRadius: 24,
+        paddingVertical: 18,
+        alignItems: 'center',
+    },
+    saveButtonText: {
         color: '#FFFFFF',
         fontWeight: '700',
-        fontSize: 11,
+        fontSize: 13,
         letterSpacing: 1,
     },
     bottomSpace: {

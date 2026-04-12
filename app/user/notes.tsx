@@ -3,64 +3,34 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaVi
 import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
-// Dummy data from mockups
-const INITIAL_DATA = [
+const INITIAL_NOTES = [
     {
-        id: '1',
-        date: 'OCTOBER 24, 2023',
-        title: 'Finding Stillness in the Storm',
-        description: '"Be still, and know that I am..." A meditation on Psalm 46:10...',
-        image: 'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-        id: '2',
-        date: 'OCTOBER 21, 2023',
-        title: 'The Breath of Creation',
-        description: 'How every morning is a renewal of grace. Exploring...',
-        image: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-        id: '3',
-        date: 'OCTOBER 18, 2023',
-        title: 'Tiny Mercies',
-        description: 'Gratitude for the small things that sustain us through diffic...',
-        image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-        id: '4',
-        date: 'OCTOBER 15, 2023',
-        title: 'Wisdom in the Waiting',
-        description: 'Refining our patience when answers seem far away. A...',
-        image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+        id: 'n1',
+        date: 'OCTOBER 23, 2023',
+        prompt: 'What is God saying to you?',
+        text: 'A profound sense of peace today. Remembering that I do not need to control every outcome. Surrendering is the path to true freedom.'
     }
 ];
 
-
-
-export default function LibraryScreen() {
+export default function NotesScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
-    const [activeTab, setActiveTab] = useState('Saved Devotionals');
-    const [devotionals, setDevotionals] = useState(INITIAL_DATA);
+    const [activeTab, setActiveTab] = useState('Your Notes');
+    const [notes, setNotes] = useState(INITIAL_NOTES);
 
     useEffect(() => {
-
-        if (params?.image && params?.title && params?.description) {
-            const newItem = {
+        if (params?.noteText) {
+            const newNoteItem = {
                 id: Math.random().toString(),
-                date: (params.date as string) || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase(),
-                title: params.title as string,
-                description: params.description as string,
-                image: params.image as string,
+                date: (params.noteDate as string) || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase(),
+                prompt: (params.notePrompt as string) || 'Reflection',
+                text: params.noteText as string,
             };
 
-            setDevotionals((prev) => {
-                if (prev.find(item => item.title === newItem.title)) {
-                    return prev;
-                }
-                return [newItem, ...prev];
+            setNotes((prev) => {
+                if(prev.find(item => item.text === newNoteItem.text)) return prev;
+                return [newNoteItem, ...prev];
             });
-            setActiveTab('Saved Devotionals');
         }
     }, [params]);
 
@@ -90,7 +60,7 @@ export default function LibraryScreen() {
                 <View style={styles.tabsContainer}>
                     <TouchableOpacity
                         style={[styles.tab, activeTab === 'Saved Devotionals' && styles.activeTab]}
-                        onPress={() => setActiveTab('Saved Devotionals')}
+                        onPress={() => router.push('/user/library')}
                     >
                         <Text style={[styles.tabText, activeTab === 'Saved Devotionals' && styles.activeTabText]}>
                             Saved Devotionals
@@ -99,7 +69,6 @@ export default function LibraryScreen() {
 
                     <TouchableOpacity
                         style={[styles.tab, activeTab === 'Your Notes' && styles.activeTab]}
-                        onPress={() => router.push('/user/notes')}
                     >
                         <Text style={[styles.tabText, activeTab === 'Your Notes' && styles.activeTabText]}>
                             Your Notes
@@ -108,30 +77,29 @@ export default function LibraryScreen() {
                 </View>
 
                 <View style={styles.listContainer}>
-                    {devotionals.map((item) => (
-                        <View key={item.id} style={styles.card}>
-                            <Image source={{ uri: item.image }} style={styles.cardImage} />
-
-                            <View style={styles.cardContent}>
-                                <Text style={styles.cardDate}>{item.date}</Text>
-                                <Text style={styles.cardTitle} numberOfLines={2}>{item.title}</Text>
-                                <Text style={styles.cardDescription} numberOfLines={2}>{item.description}</Text>
+                    {notes.map((note) => (
+                        <View key={note.id} style={styles.noteCard}>
+                            <View style={styles.noteHeader}>
+                                <Text style={styles.noteDate}>{note.date}</Text>
+                                <TouchableOpacity>
+                                    <Feather name="more-horizontal" size={16} color="#A3A3A3" />
+                                </TouchableOpacity>
                             </View>
-
-                            <TouchableOpacity style={styles.bookmarkIcon}>
-                                <Ionicons name="bookmark" size={16} color="#826930" />
-                            </TouchableOpacity>
+                            <Text style={styles.notePrompt}>{note.prompt}</Text>
+                            <Text style={styles.noteText}>{note.text}</Text>
                         </View>
                     ))}
                 </View>
 
-                <View style={styles.emptyStateBox}>
-                    <MaterialCommunityIcons name="star-four-points" size={28} color="#D1CDBF" style={styles.emptyIcon} />
-                    <MaterialCommunityIcons name="star-four-points" size={14} color="#D1CDBF" style={styles.emptyIconSmall} />
-                    <Text style={styles.emptyStateText}>
-                        Tap the heart or bookmark icon on any devotional to save it here for reflection.
-                    </Text>
-                </View>
+                {notes.length === 0 && (
+                    <View style={styles.emptyStateBox}>
+                        <MaterialCommunityIcons name="star-four-points" size={28} color="#D1CDBF" style={styles.emptyIcon} />
+                        <MaterialCommunityIcons name="star-four-points" size={14} color="#D1CDBF" style={styles.emptyIconSmall} />
+                        <Text style={styles.emptyStateText}>
+                            You haven't written any notes yet. Take a moment to reflect on your journey.
+                        </Text>
+                    </View>
+                )}
 
                 <View style={styles.bottomSpace} />
             </ScrollView>
@@ -142,7 +110,7 @@ export default function LibraryScreen() {
                     <Text style={styles.navText}>Home</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.navItem}>
+                <TouchableOpacity style={styles.navItem} onPress={() => router.push('/user/library')}>
                     <Ionicons name="book" size={24} color="#826930" />
                     <Text style={[styles.navText, styles.activeNavText]}>Library</Text>
                 </TouchableOpacity>
@@ -232,57 +200,46 @@ const styles = StyleSheet.create({
     listContainer: {
         marginBottom: 20,
     },
-    card: {
-        flexDirection: 'row',
+    noteCard: {
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
-        padding: 12,
+        padding: 24,
         marginBottom: 16,
-        alignItems: 'center',
-        position: 'relative',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.03,
         shadowRadius: 10,
         elevation: 2,
+        borderLeftWidth: 4,
+        borderLeftColor: '#826930',
     },
-    cardImage: {
-        width: 80,
-        height: 80,
-        borderRadius: 16,
-        marginRight: 16,
+    noteHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16,
     },
-    cardContent: {
-        flex: 1,
-        paddingRight: 20,
-    },
-    cardDate: {
+    noteDate: {
         fontSize: 10,
         fontWeight: '700',
         color: '#A3A3A3',
         letterSpacing: 1.5,
-        marginBottom: 6,
     },
-    cardTitle: {
+    notePrompt: {
+        fontSize: 11,
+        color: '#826930',
+        fontWeight: '700',
+        marginBottom: 10,
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+    },
+    noteText: {
         fontSize: 16,
         fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-        fontWeight: 'bold',
-        color: '#1A1A1D',
-        marginBottom: 4,
-        lineHeight: 22,
-    },
-    cardDescription: {
-        fontSize: 12,
-        color: '#8A8A8C',
+        color: '#4A4A48',
+        lineHeight: 26,
         fontStyle: 'italic',
-        lineHeight: 18,
     },
-    bookmarkIcon: {
-        position: 'absolute',
-        top: 16,
-        right: 16,
-    },
-
     emptyStateBox: {
         borderWidth: 1,
         borderColor: '#EBE9DD',
