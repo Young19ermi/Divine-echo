@@ -10,6 +10,18 @@ export default function DetailsScreen() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [position, setPosition] = useState(0);
     const [duration, setDuration] = useState(1);
+    const [count, setCount] = useState(0);
+    const [isLiked, setIsLiked] = useState(false);
+
+    const toggleLike = () => {
+        if (isLiked) {
+            setCount(prev => prev - 1);
+            setIsLiked(false);
+        } else {
+            setCount(prev => prev + 1);
+            setIsLiked(true);
+        }
+    };
 
     async function togglePlayPause() {
         if (!sound) {
@@ -43,6 +55,8 @@ export default function DetailsScreen() {
             }
             : undefined;
     }, [sound]);
+
+
 
     const formatTime = (millis: number) => {
         const totalSeconds = Math.floor(millis / 1000);
@@ -133,9 +147,11 @@ export default function DetailsScreen() {
             {/* Floating Action Bar */}
             <View style={styles.floatingActionBar}>
                 <View style={styles.actionLeft}>
-                    <TouchableOpacity style={styles.actionButton}>
-                        <Ionicons name="heart" size={22} color="#4A4A48" />
-                        <Text style={styles.actionText}>2,400</Text>
+                    <TouchableOpacity style={styles.actionButton} onPress={toggleLike}>
+                        <Ionicons name={isLiked ? "heart" : "heart-outline"} size={22} color={isLiked ? "#c7210bff" : "#4A4A48"} />
+                        <Text style={[styles.actionText, isLiked && { color: "#c7210bff" }]}>
+                            {count.toLocaleString()}
+                        </Text>
                     </TouchableOpacity>
                 </View>
 
@@ -153,7 +169,7 @@ export default function DetailsScreen() {
                             }
                         });
                     }}>
-                        <Ionicons name="bookmark" size={22} color="#4A4A48" />
+                        <Ionicons name={isLiked ? "bookmark" : "bookmark-outline"} size={22} color={isLiked ? "#4A4A48" : "#826930"} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.reflectButton} onPress={() => router.push('/user/notet')}>
                         <Feather name="edit-2" size={14} color="#FFF" />
@@ -361,14 +377,14 @@ const styles = StyleSheet.create({
         bottom: 30,
         left: 20,
         right: 20,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'rgba(255, 255, 255, 0.65)', // Semi-transparent so scrolling content behind is visible
         borderRadius: 40,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingVertical: 12,
         paddingHorizontal: 20,
-        shadowColor: '#000',
+        shadowColor: '#FFFFF',
         shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.08,
         shadowRadius: 24,
