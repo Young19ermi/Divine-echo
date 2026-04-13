@@ -186,13 +186,13 @@ export const styles = StyleSheet.create({
         color: '#1A1A1D',
         lineHeight: 26,
         fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-        zIndex: 2, 
+        zIndex: 2,
     },
     watermark: {
         position: 'absolute',
         bottom: 9,
         right: 10,
-        fontSize: 160,
+        fontSize: 200,
         fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
         fontStyle: 'italic',
         fontWeight: 'bold',
@@ -221,17 +221,25 @@ export const styles = StyleSheet.create({
     },
     bottomTabBar: {
         position: 'absolute',
-        bottom: 12,
+        bottom: 14,
         left: 20,
-        right: 18,
-        backgroundColor: 'rgba(255, 255, 255, 0.85)', 
+        right: 20,
+
+        height: 60,
+        paddingHorizontal: 10,
+
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
         flexDirection: 'row',
         justifyContent: 'space-around',
-        borderRadius: 50,
+        alignItems: 'center',
+
+        borderRadius: 30,
+
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.06,
-        shadowRadius: 40,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.08,
+        shadowRadius: 20,
+
         elevation: 8,
     },
     tabItem: {
@@ -250,7 +258,7 @@ export const styles = StyleSheet.create({
     },
     tabItemText: {
         fontSize: 10,
-        color: '#A3A3A3',
+        color: '#1F1F1F',
         marginTop: 6,
         fontWeight: '700',
         letterSpacing: 0.5,
