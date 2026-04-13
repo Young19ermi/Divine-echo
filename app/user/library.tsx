@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView, Platform, StatusBar } from 'react-native';
-import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+
+import LibraryHeader from '../../components/LibraryHeader';
+import LibraryBottomNav from '../../components/LibraryBottomNav';
+import LibraryTabs from '../../components/LibraryTabs';
+import { styles } from './styles/library.styles';
 
 // Dummy data from mockups
 const INITIAL_DATA = [
@@ -66,20 +71,7 @@ export default function LibraryScreen() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
-                    <Feather name="menu" size={24} color="#826930" />
-                </TouchableOpacity>
-
-                <Text style={styles.headerTitle}>Sacred Pause</Text>
-
-                <TouchableOpacity style={styles.iconButton}>
-                    <Image
-                        source={{ uri: 'https://i.pravatar.cc/100' }}
-                        style={styles.profilePic}
-                    />
-                </TouchableOpacity>
-            </View>
+            <LibraryHeader />
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 <View style={styles.titleSection}>
@@ -87,25 +79,7 @@ export default function LibraryScreen() {
                     <Text style={styles.pageSubtitle}>Your collection of quiet moments and reflections.</Text>
                 </View>
 
-                <View style={styles.tabsContainer}>
-                    <TouchableOpacity
-                        style={[styles.tab, activeTab === 'Saved Devotionals' && styles.activeTab]}
-                        onPress={() => setActiveTab('Saved Devotionals')}
-                    >
-                        <Text style={[styles.tabText, activeTab === 'Saved Devotionals' && styles.activeTabText]}>
-                            Saved Devotionals
-                        </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={[styles.tab, activeTab === 'Your Notes' && styles.activeTab]}
-                        onPress={() => router.push('/user/notes')}
-                    >
-                        <Text style={[styles.tabText, activeTab === 'Your Notes' && styles.activeTabText]}>
-                            Your Notes
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+                <LibraryTabs activeTab="Saved Devotionals" />
 
                 <View style={styles.listContainer}>
                     {devotionals.map((item) => (
@@ -136,206 +110,7 @@ export default function LibraryScreen() {
                 <View style={styles.bottomSpace} />
             </ScrollView>
 
-            <View style={styles.bottomNav}>
-                <TouchableOpacity style={styles.navItem} onPress={() => router.push('/user/homes')}>
-                    <Ionicons name="home" size={24} color="#8A8A8C" />
-                    <Text style={styles.navText}>Home</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.navItem}>
-                    <Ionicons name="book" size={24} color="#826930" />
-                    <Text style={[styles.navText, styles.activeNavText]}>Library</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.navItem} onPress={() => { }}>
-                    <Ionicons name="person" size={24} color="#8A8A8C" />
-                    <Text style={styles.navText}>Profile</Text>
-                </TouchableOpacity>
-            </View>
+            <LibraryBottomNav activeScreen="Library" />
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: '#FAF8F3',
-        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        paddingVertical: 12,
-    },
-    iconButton: {
-        padding: 4,
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-        fontStyle: 'italic',
-        fontWeight: 'bold',
-        color: '#826930',
-        letterSpacing: 0.5,
-    },
-    profilePic: {
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        backgroundColor: '#1A1A1D',
-    },
-    scrollContent: {
-        paddingHorizontal: 24,
-        paddingTop: 16,
-    },
-    titleSection: {
-        marginBottom: 30,
-    },
-    pageTitle: {
-        fontSize: 36,
-        fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-        fontWeight: 'bold',
-        color: '#1A1A1D',
-        marginBottom: 8,
-    },
-    pageSubtitle: {
-        fontSize: 15,
-        fontStyle: 'italic',
-        color: '#8A8A8C',
-        lineHeight: 22,
-    },
-    tabsContainer: {
-        flexDirection: 'row',
-        marginBottom: 24,
-        borderBottomWidth: 1,
-        borderBottomColor: '#EBE9DD',
-    },
-    tab: {
-        marginRight: 24,
-        paddingBottom: 12,
-    },
-    activeTab: {
-        borderBottomWidth: 2,
-        borderBottomColor: '#826930',
-    },
-    tabText: {
-        fontSize: 14,
-        color: '#A3A3A3',
-        fontWeight: '500',
-    },
-    activeTabText: {
-        color: '#826930',
-        fontWeight: '600',
-    },
-    listContainer: {
-        marginBottom: 20,
-    },
-    card: {
-        flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
-        borderRadius: 20,
-        padding: 12,
-        marginBottom: 16,
-        alignItems: 'center',
-        position: 'relative',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.03,
-        shadowRadius: 10,
-        elevation: 2,
-    },
-    cardImage: {
-        width: 80,
-        height: 80,
-        borderRadius: 16,
-        marginRight: 16,
-    },
-    cardContent: {
-        flex: 1,
-        paddingRight: 20,
-    },
-    cardDate: {
-        fontSize: 10,
-        fontWeight: '700',
-        color: '#A3A3A3',
-        letterSpacing: 1.5,
-        marginBottom: 6,
-    },
-    cardTitle: {
-        fontSize: 16,
-        fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
-        fontWeight: 'bold',
-        color: '#1A1A1D',
-        marginBottom: 4,
-        lineHeight: 22,
-    },
-    cardDescription: {
-        fontSize: 12,
-        color: '#8A8A8C',
-        fontStyle: 'italic',
-        lineHeight: 18,
-    },
-    bookmarkIcon: {
-        position: 'absolute',
-        top: 16,
-        right: 16,
-    },
-
-    emptyStateBox: {
-        borderWidth: 1,
-        borderColor: '#EBE9DD',
-        borderStyle: 'dashed',
-        borderRadius: 20,
-        padding: 30,
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    emptyIcon: {
-        marginBottom: -10,
-        marginLeft: -10,
-    },
-    emptyIconSmall: {
-        marginBottom: 16,
-        marginLeft: 20,
-    },
-    emptyStateText: {
-        fontSize: 13,
-        color: '#A3A3A3',
-        textAlign: 'center',
-        lineHeight: 20,
-        paddingHorizontal: 10,
-    },
-    bottomSpace: {
-        height: 100,
-    },
-    bottomNav: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        flexDirection: 'row',
-        backgroundColor: '#FAF8F3',
-        paddingVertical: 12,
-        paddingBottom: Platform.OS === 'ios' ? 30 : 12,
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        borderTopWidth: 1,
-        borderTopColor: '#EBE9DD',
-    },
-    navItem: {
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    navText: {
-        fontSize: 10,
-        marginTop: 4,
-        color: '#8A8A8C',
-        fontWeight: '500',
-    },
-    activeNavText: {
-        color: '#826930',
-        fontWeight: '600',
-    },
-});
