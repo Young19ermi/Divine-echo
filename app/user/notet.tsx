@@ -4,7 +4,8 @@ import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import EditorToolbar from '../../components/EditorToolbar';
 import { styles } from './styles/notet.styles';
-
+import { Library } from 'lucide-react-native';
+import { CloudBackup } from 'lucide-react-native';
 export default function NotetScreen() {
     const router = useRouter();
     const [note, setNote] = useState('');
@@ -18,18 +19,27 @@ export default function NotetScreen() {
                 {/* Header */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => router.back()} style={styles.dismissButton}>
-                        <Feather name="x" size={16} color="#8A8A8C" />
-                        <Text style={styles.dismissText}>DISMISS</Text>
+                        <Feather name="x" size={16} color="#F87171" />
+                        <Text style={styles.dismissText}></Text>
                     </TouchableOpacity>
                     <View style={styles.headerRight}>
                         <Text style={styles.journalText}>JOURNAL ENTRY</Text>
-                        <View style={styles.dot} />
+                        <View style={styles.dot}  />
                     </View>
                 </View>
 
                 <View style={styles.content}>
                     <Text style={styles.title}>Your Reflection</Text>
                     <View style={styles.titleUnderline} />
+
+                    <View style={styles.divider} />
+                        <View style={styles.guidedPrompt}>
+                            <Ionicons name="sparkles" size={16} color="#B5965A" style={{ marginRight: 12, marginTop: 2 }} />
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.promptLabel}>GUIDED PROMPT</Text>
+                                <Text style={styles.promptText}>What is God saying to you today?</Text>
+                            </View>
+                        </View>
 
                     {/* Toolbar Box */}
                     <View style={styles.editorContainer}>
@@ -66,14 +76,14 @@ export default function NotetScreen() {
                     </View>
 
                     <View style={styles.bottomSection}>
-                        <View style={styles.divider} />
+                        {/* <View style={styles.divider} />
                         <View style={styles.guidedPrompt}>
                             <Ionicons name="sparkles" size={16} color="#B5965A" style={{ marginRight: 12, marginTop: 2 }} />
                             <View style={{ flex: 1 }}>
                                 <Text style={styles.promptLabel}>GUIDED PROMPT</Text>
                                 <Text style={styles.promptText}>What is God saying to you today?</Text>
                             </View>
-                        </View>
+                        </View> */}
 
                         <TouchableOpacity style={styles.saveButton}
                             onPress={() => {
@@ -90,7 +100,9 @@ export default function NotetScreen() {
                                 }
                             }}
                         >
-                            <MaterialCommunityIcons name="book-open-page-variant" size={18} color="#FFF" style={{ marginRight: 8 }} />
+                            <CloudBackup size={18} color="#FFF" style={{ marginRight: 8 }}/>
+                            {/* <Library size={18} color="#FFF" style={{ marginRight: 8 }}/> */}
+                            {/* <MaterialCommunityIcons name="book-open-page-variant" size={18} color="#FFF" style={{ marginRight: 8 }} /> */}
                             <Text style={styles.saveButtonText}>Save Reflection</Text>
                         </TouchableOpacity>
                     </View>
@@ -102,7 +114,7 @@ export default function NotetScreen() {
                         <Feather name="shield" size={10} color="#A3A3A3" />
                         <Text style={styles.footerText}>PRIVATE SANCTUARY</Text>
                     </View>()
-                    <Text style={styles.footerTextRight}>SACRED PAUSE EDITORIAL SERIES</Text>
+                    <Text style={styles.footerTextRight}>Divine-Echo EDITORIAL SERIES</Text>
                 </View>
             </KeyboardAvoidingView>
         </SafeAreaView>
