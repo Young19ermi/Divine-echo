@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
     dismissText: {
         fontSize: 10,
         fontWeight: '700',
-        color: '#8A8A8C',
+        color: '#F87171',
         letterSpacing: 1.5,
         marginLeft: 6,
     },
@@ -41,10 +41,12 @@ export const styles = StyleSheet.create({
         marginRight: 8,
     },
     dot: {
-        width: 4,
-        height: 4,
-        borderRadius: 2,
-        backgroundColor: '#4A4A48',
+        width: 8,
+        height: 8,
+
+        borderRadius: 8,
+        backgroundColor: '#22C55E',
+        color: '#15e00eff',
     },
     content: {
         flex: 1,
