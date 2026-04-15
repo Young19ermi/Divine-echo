@@ -2,37 +2,45 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView, Platform, StatusBar } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import LibraryHeader from '../../components/LibraryHeader';
 import LibraryBottomNav from '../../components/LibraryBottomNav';
 import LibraryTabs from '../../components/LibraryTabs';
 import { styles } from './styles/library.styles';
 
-// Dummy data from mockups
-const INITIAL_DATA = [
-    {
-        id: '1',
-        date: 'OCTOBER 24, 2023',
-        title: 'Finding Stillness in the Storm',
-        description: '"Be still, and know that I am..." A meditation on Psalm 46:10...',
-        image: 'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-        id: '2',
-        date: 'OCTOBER 21, 2023',
-        title: 'The Breath of Creation',
-        description: 'How every morning is a renewal of grace. Exploring...',
-        image: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
-    },
-];
-
+interface param {
+    id: string;
+    date: string;
+    title: string;
+    description: string;
+    image: string;
+}
 export default function LibraryScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
     const [activeTab, setActiveTab] = useState('Saved Devotionals');
-    const [devotionals, setDevotionals] = useState(INITIAL_DATA);
+    const [devotionals, setDevotionals] = useState<param[]>([]);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
+        const loadDevotionals = async () => {
+            try {
+                const storedDevotionals = await AsyncStorage.getItem('saved_devotionals');
+                if (storedDevotionals) {
+                    setDevotionals(JSON.parse(storedDevotionals));
+                }
+            } catch (error) {
+                console.error('Failed to load devotionals from AsyncStorage:', error);
+            } finally {
+                setIsLoaded(true);
+            }
+        };
+        loadDevotionals();
+    }, []);
+
+    useEffect(() => {
+        if (!isLoaded) return; // Wait for initial load to prevent overwriting storage
 
         if (params?.image && params?.title && params?.description) {
             const newItem = {
@@ -47,11 +55,18 @@ export default function LibraryScreen() {
                 if (prev.find(item => item.title === newItem.title)) {
                     return prev;
                 }
-                return [newItem, ...prev];
+                const updatedData = [newItem, ...prev];
+                AsyncStorage.setItem('saved_devotionals', JSON.stringify(updatedData)).catch(err =>
+                    console.error('Failed to save to AsyncStorage:', err)
+                );
+                return updatedData;
             });
             setActiveTab('Saved Devotionals');
+
+            // Clear params so it doesn't repeatedly process on focus changes
+            router.setParams({ image: "", title: "", description: "" });
         }
-    }, [params]);
+    }, [params, isLoaded]); // Re-run when isLoaded becomes true
 
     return (
         <SafeAreaView style={styles.safeArea}>
