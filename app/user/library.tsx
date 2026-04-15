@@ -24,23 +24,7 @@ const INITIAL_DATA = [
         description: 'How every morning is a renewal of grace. Exploring...',
         image: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
     },
-    {
-        id: '3',
-        date: 'OCTOBER 18, 2023',
-        title: 'Tiny Mercies',
-        description: 'Gratitude for the small things that sustain us through diffic...',
-        image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
-    },
-    {
-        id: '4',
-        date: 'OCTOBER 15, 2023',
-        title: 'Wisdom in the Waiting',
-        description: 'Refining our patience when answers seem far away. A...',
-        image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
-    }
 ];
-
-
 
 export default function LibraryScreen() {
     const router = useRouter();
