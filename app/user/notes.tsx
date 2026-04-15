@@ -8,20 +8,28 @@ import LibraryBottomNav from '../../components/LibraryBottomNav';
 import LibraryTabs from '../../components/LibraryTabs';
 import { styles } from './styles/notes.styles';
 
-const INITIAL_NOTES = [
-    {
-        id: 'n1',
-        date: 'OCTOBER 23, 2023',
-        prompt: 'What is God saying to you?',
-        text: 'A profound sense of peace today. Remembering that I do not need to control every outcome. Surrendering is the path to true freedom.'
-    }
-];
+// // Dummy Datas
+// const INITIAL_NOTES = [
+//     {
+//         id: 'n1',
+//         date: 'OCTOBER 23, 2023',
+//         prompt: 'What is God saying to you?',
+//         text: 'A profound sense of peace today. Remembering that I do not need to control every outcome. Surrendering is the path to true freedom.'
+//     }
+// ];
 
+// Interface
+interface data {
+    id: string;
+    date: string;
+    prompt: string;
+    text: string;
+}
 export default function NotesScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
     const [activeTab, setActiveTab] = useState('Your Notes');
-    const [notes, setNotes] = useState(INITIAL_NOTES);
+    const [notes, setNotes] = useState<data[]>([]);
 
     useEffect(() => {
         if (params?.noteText) {
