@@ -5,6 +5,7 @@ import { Link, useRouter } from 'expo-router';
 import { Audio } from 'expo-av';
 import EditorToolbar from '../../components/EditorToolbar';
 import { styles } from './styles/homes.styles';
+import { House, User } from 'lucide-react-native';
 interface ReflectionData {
     audio_url: string;
     quote_title: string;
@@ -87,6 +88,7 @@ export default function HomeScreen() {
                         <TouchableOpacity>
                             <Feather name="menu" size={24} color="#C19B36" />
                         </TouchableOpacity>
+                        <Text style={styles.headerTitle}>Divine Echo</Text>
                         <Text style={styles.headerTitle}>Divine Echo</Text>
                         <Image
                             source={{ uri: 'https://media.istockphoto.com/id/2153901491/vector/good-shepherd-the-story-of-jesus-christ-parable-of-the-lost-sheep-vector-religious.jpg?s=612x612&w=0&k=20&c=Oup0F7N87_ZR28MV4itpWg5gIN_E2QxiJSwDC65bR2c=' }}
@@ -200,16 +202,20 @@ export default function HomeScreen() {
                 <View style={styles.bottomTabBar}>
                     <TouchableOpacity style={styles.tabItem}>
                         <View style={styles.activeTabIndicator} />
-                        <Ionicons name="home" size={18} color="#C19B36" />
+                        {/* <MaterialCommunityIcons name="library" size={24} color="black" /> */}
+
+                        {/* <Ionicons name="home" size={20} color="#C19B36" /> */}
+                        <House size = {20} color = '#C19B36'/>
                         <Text style={[styles.tabItemText, styles.tabItemTextActive]}>HOME</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.tabItem} onPress={() => (router.push('/user/library'))}>
-                        <Ionicons name="book" size={18} color="#A3A3A3" />
-                        <Text style={styles.tabItemText}>LIBRARY</Text>
+                    <MaterialCommunityIcons name="library-outline" size={20} color="#C59A3F" />
+                        <Text style={[styles.tabItemText, styles.tabItemTextActive]}>LIBRARY</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.tabItem}>
-                        <Ionicons name="person" size={18} color="#A3A3A3" />
-                        <Text style={styles.tabItemText}>PROFILE</Text>
+                        {/* <Ionicons name="person" size={20} color="#A3A3A3" /> */}
+                        <User size = {20} color = '#C19B36'/>
+                        <Text style={[styles.tabItemText, styles.tabItemTextActive]}>PROFILE</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
