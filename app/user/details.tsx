@@ -6,6 +6,7 @@ import { Audio } from 'expo-av';
 import { styles } from './styles/details.styles';
 
 interface description {
+    id: number,
     teaching_audio: string,
     teaching_audio_title: string,
     teaching_image: string,
@@ -79,7 +80,7 @@ export default function DetailsScreen() {
     };
 
     const progressPercentage = duration > 0 ? (position / duration) * 100 : 0;
-    const title = descriptiondata?.teaching_audio_title || 'StillNESS IS WHERE GOD SPEAKS THE LOUDEST. ';
+    const title = descriptiondata?.teaching_audio_title || 'STILLNESS IS WHERE GOD SPEAKS THE LOUDEST. ';
     const max_words = 27;
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -179,10 +180,11 @@ export default function DetailsScreen() {
                         router.push({
                             pathname: '/user/library',
                             params: {
-                                image: descriptiondata?.teaching_image,
-                                title: descriptiondata?.bible_verse_number,
-                                description: descriptiondata?.details,
-                                date: new Date().getDate()
+                                id: descriptiondata?.id || 1,
+                                date: `${new Date().toLocaleDateString(undefined, { month: 'long' })} ${new Date().getDate()}, ${new Date().getFullYear()}`,
+                                title: descriptiondata?.quote_title || 'Be Still and Know that am God.',
+                                description: descriptiondata?.details || 'In the modern rhythm of constant motion, the act of pausing is not merely a break from work; it is a profound spiritual rebellion. To be still is to consciously relinquish the illusion of control. It is in these quiet fractures of the day that we find the capacity to hear the divine whisper that is often drowned out by the roar of our anxieties.',
+                                image: descriptiondata?.teaching_image || 'https://i.pinimg.com/736x/27/59/8b/27598bd9a423db0ec04fff577dd266bf.jpg',
                             }
                         });
                     }}>

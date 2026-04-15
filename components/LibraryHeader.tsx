@@ -11,7 +11,7 @@ export default function LibraryHeader() {
                 <Feather name="menu" size={24} color="#826930" />
             </TouchableOpacity>
 
-            <Text style={styles.headerTitle}>Sacred Pause</Text>
+            <Text style={styles.headerTitle}>Divine Echo</Text>
 
             <TouchableOpacity style={styles.iconButton}>
                 <Image
