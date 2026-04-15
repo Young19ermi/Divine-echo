@@ -5,6 +5,13 @@ import { Link, useRouter } from 'expo-router';
 import { Audio } from 'expo-av';
 import EditorToolbar from '../../components/EditorToolbar';
 import { styles } from './styles/homes.styles';
+interface ReflectionData {
+    audio_url: string;
+    quote_title: string;
+    quote_sub: string;
+    quote_body: string;
+    quote_author: string;
+}
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -19,10 +26,31 @@ export default function HomeScreen() {
     const [isItalic, setIsItalic] = useState(false);
     const [isUnderline, setIsUnderline] = useState(false);
 
+    const [reflection, setReflection] = useState<ReflectionData | null>(null);
+
+    useEffect(() => {
+        const fetchReflection = async () => {
+            try {
+                // Adjust this URL to your actual FastAPI backend endpoint
+                // Note: For Android emulator, use 'http://10.0.2.2:8000' instead of 'http://127.0.0.1:8000'
+                const response = await fetch('http://127.0.0.1:8000/api/today-reflection');
+                if (response.ok) {
+                    const data = await response.json();
+                    setReflection(data);
+                }
+            } catch (error) {
+                console.error("Error fetching reflection data:", error);
+            }
+        };
+
+        fetchReflection();
+    }, []);
+
     async function togglePlayPause() {
         if (!sound) {
+            const audioUri = reflection?.audio_url || 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
             const { sound: newSound } = await Audio.Sound.createAsync(
-                { uri: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+                { uri: audioUri },
                 { shouldPlay: true }
             );
             setSound(newSound);
@@ -59,7 +87,7 @@ export default function HomeScreen() {
                         <TouchableOpacity>
                             <Feather name="menu" size={24} color="#C19B36" />
                         </TouchableOpacity>
-                        <Text style={styles.headerTitle}>Sacred Pause</Text>
+                        <Text style={styles.headerTitle}>Divine Echo</Text>
                         <Image
                             source={{ uri: 'https://media.istockphoto.com/id/2153901491/vector/good-shepherd-the-story-of-jesus-christ-parable-of-the-lost-sheep-vector-religious.jpg?s=612x612&w=0&k=20&c=Oup0F7N87_ZR28MV4itpWg5gIN_E2QxiJSwDC65bR2c=' }}
                             style={styles.avatar}
@@ -68,7 +96,7 @@ export default function HomeScreen() {
 
                     {/* Greeting */}
                     <View style={styles.greetingContainer}>
-                        <Text style={styles.greetingUser}>Good Morning, Daniel</Text>
+                        <Text style={styles.greetingUser}>Good Morning, Jeremey </Text>
                         <Text style={styles.greetingSub}>Let's spend a moment with God</Text>
                     </View>
 
@@ -95,13 +123,13 @@ export default function HomeScreen() {
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.quoteTitle}>"Be still, and know that I am God..."</Text>
-                        <Text style={styles.quoteSub}>— PSALM 46:10</Text>
+                        <Text style={styles.quoteTitle}>{reflection?.quote_title || '"Be still, and know that I am God..."'}</Text>
+                        <Text style={styles.quoteSub}>{reflection?.quote_sub || '— PSALM 46:10'}</Text>
 
                         <Text style={styles.quoteBody}>
-                            "Stillness is where God speaks the loudest. In the quiet of the morning, we find the strength to face the..."
+                            {reflection?.quote_body || '"Stillness is where God speaks the loudest. In the quiet of the morning, we find the strength to face the..."'}
                         </Text>
-                        <Text style={styles.quoteAuthor}>CHARLES SPURGEON</Text>
+                        <Text style={styles.quoteAuthor}>{reflection?.quote_author || 'CHARLES SPURGEON'}</Text>
 
                         <TouchableOpacity style={styles.readMoreButton} onPress={() => router.push('/user/details')}>
                             <Text style={styles.readMoreText}>Read More</Text>
@@ -123,10 +151,10 @@ export default function HomeScreen() {
                                 baseColor="#C59A3F"
                                 activeColor="#A3A3A3"
                             />
-                            
+
                             <View style={styles.inputWrapper}>
                                 <Text style={styles.watermark}>p.</Text>
-                                
+
                                 <TextInput
                                     style={[
                                         styles.editorTextInput,
@@ -143,10 +171,10 @@ export default function HomeScreen() {
                                 />
                             </View>
 
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 style={styles.saveButtonBox}
                                 onPress={() => {
-                                    if(note.trim().length > 0) {
+                                    if (note.trim().length > 0) {
                                         router.push({
                                             pathname: '/user/notes',
                                             params: {
@@ -159,8 +187,8 @@ export default function HomeScreen() {
                                     }
                                 }}
                             >
-                            <MaterialCommunityIcons name="book-open-page-variant" size={18} color="#FFF" style={{ marginRight: 8 }} />
-                            <Text style={styles.saveButtonText}>Save Reflection</Text>
+                                <MaterialCommunityIcons name="book-open-page-variant" size={18} color="#FFF" style={{ marginRight: 8 }} />
+                                <Text style={styles.saveButtonText}>Save Reflection</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
