@@ -7,6 +7,8 @@ import LibraryHeader from '../../components/LibraryHeader';
 import LibraryBottomNav from '../../components/LibraryBottomNav';
 import LibraryTabs from '../../components/LibraryTabs';
 import { styles } from './styles/notes.styles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import home from '../home';
 
 // // Dummy Datas
 // const INITIAL_NOTES = [
@@ -30,22 +32,52 @@ export default function NotesScreen() {
     const params = useLocalSearchParams();
     const [activeTab, setActiveTab] = useState('Your Notes');
     const [notes, setNotes] = useState<data[]>([]);
+    const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
+        const load_notes = async () => {
+            try {
+                const saved_notes = await AsyncStorage.getItem('saved_notes') //
+                if (saved_notes) {
+                    setNotes(JSON.parse(saved_notes))
+                }
+            } catch (error) {
+                console.log('Erro while fetching the Local Storage Data')
+            } finally {
+                setLoaded(true)
+            }
+        }; load_notes()
+    }, [])
+    useEffect(() => {
+        if (!loaded) return; // Wait for initial load to prevent overwriting storage
+
         if (params?.noteText) {
             const newNoteItem = {
-                id: Math.random().toString(),
+                id: (params.id as string) || Math.random().toString(),
                 date: (params.noteDate as string) || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase(),
                 prompt: (params.notePrompt as string) || 'Reflection',
                 text: params.noteText as string,
             };
-
             setNotes((prev) => {
-                if(prev.find(item => item.text === newNoteItem.text)) return prev;
-                return [newNoteItem, ...prev];
+                let updated_data;
+                const existingIndex = prev.findIndex(item => item.id === newNoteItem.id);
+                if (existingIndex >= 0) {
+                    updated_data = [...prev];
+                    updated_data[existingIndex] = newNoteItem;
+                } else if (prev.find(item => item.text === newNoteItem.text)) {
+                    return prev;
+                } else {
+                    updated_data = [newNoteItem, ...prev];
+                }
+
+                AsyncStorage.setItem('saved_notes', JSON.stringify(updated_data))
+                    .catch(err => { console.log("error while fetching the data: ", err) })
+
+                return updated_data
             });
+            router.setParams({ noteText: "", id: "", noteDate: "", notePrompt: "" });
         }
-    }, [params]);
+    }, [params, loaded]);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -61,16 +93,39 @@ export default function NotesScreen() {
 
                 <View style={styles.listContainer}>
                     {notes.map((note) => (
-                        <View key={note.id} style={styles.noteCard}>
+                        <TouchableOpacity 
+                            key={note.id} 
+                            style={styles.noteCard}
+                            onPress={() => {
+                                router.push({
+                                    pathname: '/user/notet',
+                                    params: {
+                                        id: note.id,
+                                        noteText: note.text,
+                                        noteDate: note.date,
+                                        notePrompt: note.prompt
+                                    }
+                                });
+                            }}
+                        >
                             <View style={styles.noteHeader}>
                                 <Text style={styles.noteDate}>{note.date}</Text>
                                 <TouchableOpacity>
-                                    <Feather name="more-horizontal" size={16} color="#A3A3A3" />
+                                    <MaterialCommunityIcons 
+                                        name="delete" 
+                                        size={20} 
+                                        color="#ce1515ff" 
+                                        onPress={async () => { 
+                                            const filteredNotes = notes.filter(n => n.id !== note.id);
+                                            setNotes(filteredNotes);
+                                            await AsyncStorage.setItem('saved_notes', JSON.stringify(filteredNotes));
+                                        }} 
+                                    />
                                 </TouchableOpacity>
                             </View>
                             <Text style={styles.notePrompt}>{note.prompt}</Text>
                             <Text style={styles.noteText}>{note.text}</Text>
-                        </View>
+                        </TouchableOpacity>
                     ))}
                 </View>
 
