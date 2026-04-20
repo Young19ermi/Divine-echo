@@ -6,6 +6,7 @@ import { Audio } from 'expo-av';
 import EditorToolbar from '../../components/EditorToolbar';
 import { styles } from './styles/homes.styles';
 import { House, User } from 'lucide-react-native';
+import { supabase } from '../../lib/supabase';
 interface ReflectionData {
     audio_url: string;
     quote_title: string;
@@ -32,15 +33,23 @@ export default function HomeScreen() {
     useEffect(() => {
         const fetchReflection = async () => {
             try {
-                // Adjust this URL to your actual FastAPI backend endpoint
-                // Note: For Android emulator, use 'http://10.0.2.2:8000' instead of 'http://127.0.0.1:8000'
-                const response = await fetch('http://127.0.0.1:8000/api/today-reflection');
-                if (response.ok) {
-                    const data = await response.json();
-                    setReflection(data);
+                // Fetch the latest or today's reflection from Supabase
+                const { data, error } = await supabase
+                    .from('reflections')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (error) {
+                    throw error;
+                }
+                
+                if (data) {
+                    setReflection(data as ReflectionData);
                 }
             } catch (error) {
-                console.error("Error fetching reflection data:", error);
+                console.error("Error fetching reflection data from Supabase:", error);
             }
         };
 
@@ -89,10 +98,12 @@ export default function HomeScreen() {
                             <Feather name="menu" size={24} color="#C19B36" />
                         </TouchableOpacity>
                         <Text style={styles.headerTitle}>Divine Echo</Text>
-                        <Image
-                            source={{ uri: 'https://media.istockphoto.com/id/2153901491/vector/good-shepherd-the-story-of-jesus-christ-parable-of-the-lost-sheep-vector-religious.jpg?s=612x612&w=0&k=20&c=Oup0F7N87_ZR28MV4itpWg5gIN_E2QxiJSwDC65bR2c=' }}
-                            style={styles.avatar}
-                        />
+                        <TouchableOpacity onPress={() => router.push('/user/admin')}>
+                            <Image
+                                source={{ uri: 'https://media.istockphoto.com/id/2153901491/vector/good-shepherd-the-story-of-jesus-christ-parable-of-the-lost-sheep-vector-religious.jpg?s=612x612&w=0&k=20&c=Oup0F7N87_ZR28MV4itpWg5gIN_E2QxiJSwDC65bR2c=' }}
+                                style={styles.avatar}
+                            />
+                        </TouchableOpacity>
                     </View>
 
                     {/* Greeting */}

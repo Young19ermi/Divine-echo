@@ -82,7 +82,22 @@ export default function LibraryScreen() {
 
                 <View style={styles.listContainer}>
                     {devotionals.map((item) => (
-                        <View key={item.id} style={styles.card}>
+                        <TouchableOpacity 
+                            key={item.id} 
+                            style={styles.card}
+                            onPress={() => {
+                                router.push({
+                                    pathname: '/user/details',
+                                    params: {
+                                        id: item.id,
+                                        title: item.title,
+                                        description: item.description,
+                                        image: item.image,
+                                        date: item.date
+                                    }
+                                });
+                            }}
+                        >
                             <Image source={{ uri: item.image }} style={styles.cardImage} />
 
                             <View style={styles.cardContent}>
@@ -94,7 +109,7 @@ export default function LibraryScreen() {
                             <TouchableOpacity style={styles.bookmarkIcon}>
                                 <Ionicons name="bookmark" size={16} color="#826930" />
                             </TouchableOpacity>
-                        </View>
+                        </TouchableOpacity>
                     ))}
                 </View>
 

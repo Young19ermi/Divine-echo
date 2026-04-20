@@ -1,30 +1,75 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView, Platform, StatusBar } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Audio } from 'expo-av';
 import { styles } from './styles/details.styles';
-
+import { supabase } from '@/lib/supabase';
+interface DetailsData {
+    id: number;
+    audio_url: string;
+    image_url: string;
+    verse_text: string;
+    verse_reference: string;
+    quote_title: string;
+    quote_body: string;
+}
 interface description {
     id: number,
     teaching_audio: string,
     teaching_audio_title: string,
     teaching_image: string,
     bible_verse: string,
-    bible_verse_number: string, //This one should also contain the book name and the
+    bible_verse_number: string,
     quote_title: string,
     details: string,
     teachinng_labels: string[],
 }
 export default function DetailsScreen() {
     const router = useRouter();
+    const params = useLocalSearchParams();
     const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [position, setPosition] = useState(0);
     const [duration, setDuration] = useState(1);
     const [count, setCount] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
-    const [descriptiondata, setdescriptiondata] = useState<description | null>(null)
+
+    const [descriptiondata, setdescriptiondata] = useState<description | null>()
+    useEffect(() => {
+        const details_data = async () => {
+            try {
+                const { data, error } = await supabase.from('reflections').select('*').limit(1)
+                if (data) {
+                    console.log(JSON.stringify(data))
+                    setdescriptiondata(data[8])
+                }
+                if (error) {
+                    //throw (error)
+                    console.log('error while fetching the description details :', error)
+                }
+            }
+            catch { () => { console.log(Error) } }
+        }
+        details_data()
+    }, [])
+
+
+    useEffect(() => {
+        if (params && params.title) {
+            setdescriptiondata({
+                id: Number(params.id) || 1,
+                teaching_audio: (params.audio as string) || '',
+                teaching_audio_title: params.title as string,
+                teaching_image: params.image as string,
+                bible_verse: (params.verse as string) || 'Be Still and Know that am God.',
+                bible_verse_number: (params.verse_number as string) || 'PSALM 46:10',
+                quote_title: (params.title as string),
+                details: params.description as string,
+                teachinng_labels: params.labels ? JSON.parse(params.labels as string) : ['Reflection', 'Stillness'],
+            });
+        }
+    }, [params]);
 
     const toggleLike = () => {
         if (isLiked) {

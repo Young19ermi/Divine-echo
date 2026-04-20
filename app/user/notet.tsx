@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView, Platform, StatusBar, KeyboardAvoidingView } from 'react-native';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import EditorToolbar from '../../components/EditorToolbar';
 import { styles } from './styles/notet.styles';
 import { Library } from 'lucide-react-native';
 import { CloudBackup } from 'lucide-react-native';
 export default function NotetScreen() {
     const router = useRouter();
-    const [note, setNote] = useState('');
+    const params = useLocalSearchParams();
+    const [note, setNote] = useState((params?.noteText as string) || '');
     const [isBold, setIsBold] = useState(false);
     const [isItalic, setIsItalic] = useState(false);
     const [isUnderline, setIsUnderline] = useState(false);
@@ -91,9 +92,10 @@ export default function NotetScreen() {
                                     router.push({
                                         pathname: '/user/notes',
                                         params: {
+                                            id: params?.id,
                                             noteText: note,
-                                            noteDate: 'TODAY\'S REFLECTION',
-                                            notePrompt: 'What is God saying to you?'
+                                            noteDate: params?.noteDate || 'TODAY\'S REFLECTION',
+                                            notePrompt: params?.notePrompt || 'What is God saying to you?'
                                         }
                                     });
                                     setNote('');
@@ -113,7 +115,7 @@ export default function NotetScreen() {
                     <View style={styles.footerLeft}>
                         <Feather name="shield" size={10} color="#A3A3A3" />
                         <Text style={styles.footerText}>PRIVATE SANCTUARY</Text>
-                    </View>()
+                    </View>
                     <Text style={styles.footerTextRight}>Divine-Echo EDITORIAL SERIES</Text>
                 </View>
             </KeyboardAvoidingView>
