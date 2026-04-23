@@ -5,25 +5,14 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Audio } from 'expo-av';
 import { styles } from './styles/details.styles';
 import { supabase } from '@/lib/supabase';
-interface DetailsData {
-    id: number;
-    audio_url: string;
-    image_url: string;
-    verse_text: string;
-    verse_reference: string;
-    quote_title: string;
-    quote_body: string;
-}
 interface description {
     id: number,
-    teaching_audio: string,
-    teaching_audio_title: string,
-    teaching_image: string,
-    bible_verse: string,
-    bible_verse_number: string,
+    image_url: string,
+    audio_url: string,
+    verse_text: string,
+    quote_body: string,
     quote_title: string,
-    details: string,
-    teachinng_labels: string[],
+    teaching_labels: string[],
 }
 export default function DetailsScreen() {
     const router = useRouter();
@@ -36,37 +25,34 @@ export default function DetailsScreen() {
     const [isLiked, setIsLiked] = useState(false);
 
     const [descriptiondata, setdescriptiondata] = useState<description | null>()
-    useEffect(() => {
-        const details_data = async () => {
-            try {
-                const { data, error } = await supabase.from('reflections').select('*').limit(1)
-                if (data) {
-                    console.log(JSON.stringify(data))
-                    setdescriptiondata(data[8])
-                }
-                if (error) {
-                    //throw (error)
-                    console.log('error while fetching the description details :', error)
-                }
+    const details_data = async () => {
+        try {
+            const { data, error } = await supabase.from('reflections').select('*').limit(1).single()
+            if (data) {
+                setdescriptiondata(data)
             }
-            catch { () => { console.log(Error) } }
+            if (error) {
+                console.log('error while fetching the description details :', error)
+            }
         }
-        details_data()
-    }, [])
+        catch { () => { console.log(Error) } }
+    }
 
+    useEffect(() => {
+        details_data()
+    }, []);
 
     useEffect(() => {
         if (params && params.title) {
             setdescriptiondata({
                 id: Number(params.id) || 1,
-                teaching_audio: (params.audio as string) || '',
-                teaching_audio_title: params.title as string,
-                teaching_image: params.image as string,
-                bible_verse: (params.verse as string) || 'Be Still and Know that am God.',
-                bible_verse_number: (params.verse_number as string) || 'PSALM 46:10',
+                audio_url: (params.audio as string) || '',
+                //       verse_text: params.title as string,
+                image_url: params.image as string,
+                verse_text: (params.verse as string) || 'Be Still and Know that am God.',
                 quote_title: (params.title as string),
-                details: params.description as string,
-                teachinng_labels: params.labels ? JSON.parse(params.labels as string) : ['Reflection', 'Stillness'],
+                quote_body: params.description as string,
+                teaching_labels: params.labels ? JSON.parse(params.labels as string) : ['Reflection', 'Stillness'],
             });
         }
     }, [params]);
@@ -83,7 +69,7 @@ export default function DetailsScreen() {
 
     async function togglePlayPause() {
         if (!sound) {
-            const auidioUrl = descriptiondata?.teaching_audio
+            const auidioUrl = descriptiondata?.audio_url
             const { sound: newSound } = await Audio.Sound.createAsync(
                 { uri: auidioUrl || 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
                 { shouldPlay: true }
@@ -125,7 +111,7 @@ export default function DetailsScreen() {
     };
 
     const progressPercentage = duration > 0 ? (position / duration) * 100 : 0;
-    const title = descriptiondata?.teaching_audio_title || 'STILLNESS IS WHERE GOD SPEAKS THE LOUDEST. ';
+    const title = descriptiondata?.verse_text || 'STILLNESS IS WHERE GOD SPEAKS THE LOUDEST. ';
     const max_words = 27;
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -170,34 +156,34 @@ export default function DetailsScreen() {
 
                 {/* Main Image */}
                 <Image
-                    source={{ uri: descriptiondata?.teaching_image || 'https://i.pinimg.com/1200x/26/4f/a3/264fa358757744da91a1b9aea15e5943.jpg' }}
+                    source={{ uri: descriptiondata?.image_url || 'https://i.pinimg.com/1200x/26/4f/a3/264fa358757744da91a1b9aea15e5943.jpg' }}
                     style={styles.mainImage}
                 />
 
                 {/* The Verse Section */}
                 <View style={styles.verseSection}>
                     <Text style={styles.verseLabel}>THE VERSE</Text>
-                    <Text style={styles.verseQuote}>{descriptiondata?.bible_verse || 'Be Still and Know that am God.'} </Text>
-                    <Text style={styles.verseReference}>{descriptiondata?.bible_verse_number || 'PSALM 46:10'} </Text>
+                    <Text style={styles.verseQuote}>{descriptiondata?.verse_text || 'Be Still and Know that am God.'} </Text>
+                    <Text style={styles.verseReference}>{descriptiondata?.verse_text || 'PSALM 46:10'} </Text>
                 </View>
 
                 <View style={styles.blockquoteContainer}>
                     <View style={styles.blockquoteLine} />
-                    <Text style={styles.blockquoteText}>"Stillness is where God speaks the loudest."</Text>
+                    <Text style={styles.blockquoteText}>  {descriptiondata?.quote_title || 'Stillness is where God speaks the loudest.'}</Text>
                 </View>
 
                 <View style={styles.bodyTextContainer}>
                     <Text style={styles.bodyText}>
-                        {descriptiondata?.details || ' In the modern rhythm of constant motion, the act of pausing is not merely a break from work; it is a profound spiritual rebellion. To be still is to consciously relinquish the illusion of control. It is in these quiet fractures of the day that we find the capacity to hear the divine whisper that is often drowned out by the roar of our anxieties.'}
+                        {descriptiondata?.quote_body || ' In the modern rhythm of constant motion, the act of pausing is not merely a break from work; it is a profound spiritual rebellion. To be still is to consciously relinquish the illusion of control. It is in these quiet fractures of the day that we find the capacity to hear the divine whisper that is often drowned out by the roar of our anxieties.'}
                     </Text>
                     <Text style={styles.bodyText}>
-                        {descriptiondata?.details || '  The Hebrew word for "be still" can also be translated as "sink" or "relax." Imagine sinking into the assurance of Gods sovereignty. You are not the architect of the universe; you are a guest in it. Today, find three minutes to simply exist without an agenda. Let the silence become a sanctuary.'}
+                        {descriptiondata?.quote_body || '  The Hebrew word for "be still" can also be translated as "sink" or "relax." Imagine sinking into the assurance of Gods sovereignty. You are not the architect of the universe; you are a guest in it. Today, find three minutes to simply exist without an agenda. Let the silence become a sanctuary.'}
                     </Text>
                 </View>
 
                 {/* Tags */}
                 <View style={styles.tagsContainer}>
-                    {descriptiondata?.teachinng_labels?.map((tag: string) => (
+                    {descriptiondata?.teaching_labels?.map((tag: string) => (
                         <View key={tag} style={styles.tagPill}>
                             <Text style={styles.tagText}>{tag || 'Joshua'}</Text>
                         </View>
@@ -228,8 +214,8 @@ export default function DetailsScreen() {
                                 id: descriptiondata?.id || 1,
                                 date: `${new Date().toLocaleDateString(undefined, { month: 'long' })} ${new Date().getDate()}, ${new Date().getFullYear()}`,
                                 title: descriptiondata?.quote_title || 'Be Still and Know that am God.',
-                                description: descriptiondata?.details || 'In the modern rhythm of constant motion, the act of pausing is not merely a break from work; it is a profound spiritual rebellion. To be still is to consciously relinquish the illusion of control. It is in these quiet fractures of the day that we find the capacity to hear the divine whisper that is often drowned out by the roar of our anxieties.',
-                                image: descriptiondata?.teaching_image || 'https://i.pinimg.com/736x/27/59/8b/27598bd9a423db0ec04fff577dd266bf.jpg',
+                                description: descriptiondata?.quote_body || 'In the modern rhythm of constant motion, the act of pausing is not merely a break from work; it is a profound spiritual rebellion. To be still is to consciously relinquish the illusion of control. It is in these quiet fractures of the day that we find the capacity to hear the divine whisper that is often drowned out by the roar of our anxieties.',
+                                image: descriptiondata?.image_url || 'https://i.pinimg.com/736x/27/59/8b/27598bd9a423db0ec04fff577dd266bf.jpg',
                             }
                         });
                     }}>
