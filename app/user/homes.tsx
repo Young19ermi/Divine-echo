@@ -7,6 +7,8 @@ import EditorToolbar from '../../components/EditorToolbar';
 import { styles } from './styles/homes.styles';
 import { House, User } from 'lucide-react-native';
 import { supabase } from '../../lib/supabase';
+import HeadphonesIcon from '@mui/icons-material/Headphones';
+
 interface ReflectionData {
     audio_url: string;
     quote_title: string;
@@ -224,8 +226,8 @@ export default function HomeScreen() {
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.tabItem}>
                         {/* <Ionicons name="person" size={20} color="#A3A3A3" /> */}
-                        <User size={20} color='#C19B36' />
-                        <Text style={[styles.tabItemText, styles.tabItemTextActive]}>PROFILE</Text>
+                        <MaterialCommunityIcons name = 'headphones' size = {20} color = "#C59A3F"/>
+                        <Text style={[styles.tabItemText, styles.tabItemTextActive]}>LISTEN</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
