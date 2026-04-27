@@ -10,9 +10,10 @@ interface description {
     image_url: string,
     audio_url: string,
     verse_text: string,
-    quote_body: string,
     quote_title: string,
-    teaching_labels: string[],
+    body_text: string,
+    verse_reference: string;
+    teaching_label: string[],
 }
 export default function DetailsScreen() {
     const router = useRouter();
@@ -27,7 +28,14 @@ export default function DetailsScreen() {
     const [descriptiondata, setdescriptiondata] = useState<description | null>()
     const details_data = async () => {
         try {
-            const { data, error } = await supabase.from('reflections').select('*').limit(1).single()
+            const { data, error } = await supabase
+
+                .from('reflections')
+                .select('*')
+                .limit(1)
+                .order('created_at', { ascending: false })
+                .single()
+
             if (data) {
                 setdescriptiondata(data)
             }
@@ -47,12 +55,12 @@ export default function DetailsScreen() {
             setdescriptiondata({
                 id: Number(params.id) || 1,
                 audio_url: (params.audio as string) || '',
-                //       verse_text: params.title as string,
                 image_url: params.image as string,
                 verse_text: (params.verse as string) || 'Be Still and Know that am God.',
                 quote_title: (params.title as string),
-                quote_body: params.description as string,
-                teaching_labels: params.labels ? JSON.parse(params.labels as string) : ['Reflection', 'Stillness'],
+                body_text: params.description as string,
+                verse_reference: params.verse_reference as string,
+                teaching_label: params.labels ? JSON.parse(params.labels as string) : ['Reflection', 'Stillness'],
             });
         }
     }, [params]);
@@ -164,7 +172,7 @@ export default function DetailsScreen() {
                 <View style={styles.verseSection}>
                     <Text style={styles.verseLabel}>THE VERSE</Text>
                     <Text style={styles.verseQuote}>{descriptiondata?.verse_text || 'Be Still and Know that am God.'} </Text>
-                    <Text style={styles.verseReference}>{descriptiondata?.verse_text || 'PSALM 46:10'} </Text>
+                    <Text style={styles.verseReference}>{descriptiondata?.verse_reference || 'PSALM 46:10'} </Text>
                 </View>
 
                 <View style={styles.blockquoteContainer}>
@@ -174,16 +182,16 @@ export default function DetailsScreen() {
 
                 <View style={styles.bodyTextContainer}>
                     <Text style={styles.bodyText}>
-                        {descriptiondata?.quote_body || ' In the modern rhythm of constant motion, the act of pausing is not merely a break from work; it is a profound spiritual rebellion. To be still is to consciously relinquish the illusion of control. It is in these quiet fractures of the day that we find the capacity to hear the divine whisper that is often drowned out by the roar of our anxieties.'}
+                        {descriptiondata?.body_text || ' In the modern rhythm of constant motion, the act of pausing is not merely a break from work; it is a profound spiritual rebellion. To be still is to consciously relinquish the illusion of control. It is in these quiet fractures of the day that we find the capacity to hear the divine whisper that is often drowned out by the roar of our anxieties.'}
                     </Text>
-                    <Text style={styles.bodyText}>
+                    {/* <Text style={styles.bodyText}>
                         {descriptiondata?.quote_body || '  The Hebrew word for "be still" can also be translated as "sink" or "relax." Imagine sinking into the assurance of Gods sovereignty. You are not the architect of the universe; you are a guest in it. Today, find three minutes to simply exist without an agenda. Let the silence become a sanctuary.'}
-                    </Text>
+                    </Text> */}
                 </View>
 
                 {/* Tags */}
                 <View style={styles.tagsContainer}>
-                    {descriptiondata?.teaching_labels?.map((tag: string) => (
+                    {descriptiondata?.teaching_label?.map((tag: string) => (
                         <View key={tag} style={styles.tagPill}>
                             <Text style={styles.tagText}>{tag || 'Joshua'}</Text>
                         </View>
@@ -214,7 +222,7 @@ export default function DetailsScreen() {
                                 id: descriptiondata?.id || 1,
                                 date: `${new Date().toLocaleDateString(undefined, { month: 'long' })} ${new Date().getDate()}, ${new Date().getFullYear()}`,
                                 title: descriptiondata?.quote_title || 'Be Still and Know that am God.',
-                                description: descriptiondata?.quote_body || 'In the modern rhythm of constant motion, the act of pausing is not merely a break from work; it is a profound spiritual rebellion. To be still is to consciously relinquish the illusion of control. It is in these quiet fractures of the day that we find the capacity to hear the divine whisper that is often drowned out by the roar of our anxieties.',
+                                description: descriptiondata?.body_text || 'In the modern rhythm of constant motion, the act of pausing is not merely a break from work; it is a profound spiritual rebellion. To be still is to consciously relinquish the illusion of control. It is in these quiet fractures of the day that we find the capacity to hear the divine whisper that is often drowned out by the roar of our anxieties.',
                                 image: descriptiondata?.image_url || 'https://i.pinimg.com/736x/27/59/8b/27598bd9a423db0ec04fff577dd266bf.jpg',
                             }
                         });

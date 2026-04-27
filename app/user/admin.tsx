@@ -24,6 +24,27 @@ export default function AdminScreen() {
     const [author, setAuthor] = useState('');
     const [quote, setQuote] = useState('');
     const [reflectionBody, setReflectionBody] = useState('');
+    const [teachingLabel, setTeachingLabel] = useState<string[]>([]);
+
+    const TEACHING_LABELS = [
+        { value: 'devotion', label: 'Devotion' },
+        { value: 'prayer', label: 'Prayer'},
+        { value: 'teaching', label: 'Teaching' },
+        { value: 'seasonal', label: 'Seasonal' },
+        { value: 'testimony', label: 'Testimony' }
+    ];
+
+    const toggleTeachingLabel = (value: string) => {
+        if (teachingLabel.includes(value)) {
+            setTeachingLabel(teachingLabel.filter(l => l !== value));
+        } else {
+            if (teachingLabel.length < 2) {
+                setTeachingLabel([...teachingLabel, value]);
+            } else {
+                Alert.alert("Limit Reached", "You can select up to 2 teaching labels.");
+            }
+        }
+    };
 
     useEffect(() => {
         loadDrafts();
@@ -53,7 +74,8 @@ export default function AdminScreen() {
             verseText,
             author,
             quote,
-            reflectionBody
+            reflectionBody,
+            teachingLabel
         };
 
         try {
@@ -74,6 +96,7 @@ export default function AdminScreen() {
         setAuthor(draft.author);
         setQuote(draft.quote);
         setReflectionBody(draft.reflectionBody);
+        setTeachingLabel(draft.teachingLabel || []);
         setActiveTab('EDITOR');
     };
 
@@ -117,7 +140,10 @@ export default function AdminScreen() {
                 upsert: true,
             });
 
-            if (error) throw error;
+            if (error) {
+                console.warn(error);
+
+            };
 
             const { data: publicUrlData } = supabase.storage.from(bucket).getPublicUrl(path);
             return publicUrlData.publicUrl;
@@ -167,12 +193,13 @@ export default function AdminScreen() {
                 quote_title: quote.substring(0, 50),
                 quote_sub: verseRef,
                 body_text: reflectionBody,
+                teaching_label: teachingLabel,
                 created_at: new Date().toISOString()
             });
 
             if (error) {
                 console.warn(error);
-                throw new Error("Make sure your Supabase 'reflections' table is set up properly with these fields!");
+                throw new Error("Error", error);
             }
 
             Alert.alert("Success", "Reflection published successfully!");
@@ -185,9 +212,10 @@ export default function AdminScreen() {
             setAuthor('');
             setQuote('');
             setReflectionBody('');
+            setTeachingLabel([]);
 
         } catch (error: any) {
-            Alert.alert("Publish Failed", error.message || "Ensure your Supabase table and Storage buckets are correctly configured.");
+            Alert.alert("Publish Failed", error || "Ensure your Supabase table and Storage buckets are correctly configured.");
         } finally {
             setIsPublishing(false);
         }
@@ -322,7 +350,40 @@ export default function AdminScreen() {
                                     />
                                 </View>
                             </View>
-
+                            {/* Teaching Label using Chips */}
+                            <View style={styles.inputGroup}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                                    <Text style={styles.inputLabel}>TEACHING LABEL (Select up to 2)</Text>
+                                    <Text style={{ fontSize: 12, color: '#A8A39B' }}>{teachingLabel.length}/2</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                                    {TEACHING_LABELS.map(option => {
+                                        const isSelected = teachingLabel.includes(option.value);
+                                        return (
+                                            <TouchableOpacity
+                                                key={option.value}
+                                                onPress={() => toggleTeachingLabel(option.value)}
+                                                style={{
+                                                    paddingVertical: 8,
+                                                    paddingHorizontal: 16,
+                                                    borderRadius: 20,
+                                                    borderWidth: 1,
+                                                    borderColor: isSelected ? '#B5965A' : '#E0DCD3',
+                                                    backgroundColor: isSelected ? '#F2EFE6' : '#FFF',
+                                                }}
+                                            >
+                                                <Text style={{
+                                                    fontSize: 14,
+                                                    color: isSelected ? '#6B582E' : '#8A857D',
+                                                    fontWeight: isSelected ? '600' : '400'
+                                                }}>
+                                                    {option.label}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        );
+                                    })}
+                                </View>
+                            </View>
                             {/* Reflection Body */}
                             <View style={styles.editorHeader}>
                                 <Text style={[styles.sectionTitle, { marginBottom: 0 }]}>Reflection Body</Text>
