@@ -27,10 +27,10 @@ export const styles = StyleSheet.create({
         color: '#C19B36',
     },
     avatar: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: '#E5DCC5',
+        width: 20,
+        height: 20,
+        borderRadius: 16,
+        backgroundColor: '#F8F6F0',
     },
     greetingContainer: {
         marginBottom: 24,

@@ -1,3 +1,4 @@
+import { Columns } from 'lucide-react-native';
 import { StyleSheet, Platform, StatusBar } from 'react-native';
 
 export const styles = StyleSheet.create({
@@ -47,67 +48,77 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingTop: 16,
     },
+    audioCardWrapper: {
+        marginBottom: 24,
+    },
+    audioLabeler: {
+        flexDirection: 'column'
+    },
     audioCard: {
-        backgroundColor: '#F4ECE1',
-        borderRadius: 20,
-        padding: 16,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 40,
+        padding: 12,
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 24,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 10,
         elevation: 2,
+        borderWidth: 1,
+        borderColor: '#EAEAEA',
+    },
+    audioLabel: {
+        fontSize: 12,
+        fontWeight: '700',
+        color: '#826930',
+        letterSpacing: 1.5,
+        marginBottom: 12,
+        paddingHorizontal: 4,
+    },
+    skipButton: {
+        padding: 4,
+        marginHorizontal: 4,
     },
     playButton: {
-        width: 44,
-        height: 44,
+        width: 40,
+        height: 40,
         borderRadius: 22,
         backgroundColor: '#826930',
         justifyContent: 'center',
         alignItems: 'center',
+        marginHorizontal: 4,
     },
-    audioInfo: {
+    audiotopRow : {
+        flexDirection: 'column',
+    },
+    audioInfoWrapper: {
         flex: 1,
-        marginLeft: 16,
-    },
-    audioTopRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 10,
-    },
-    audioLabel: {
-        fontSize: 10,
-        fontWeight: '700',
-        color: '#826930',
-        letterSpacing: 1.5,
-    },
-    audioTime: {
-        fontSize: 10,
-        color: '#8A8A8C',
+        alignItems: 'center',
+        marginLeft: 8,
+        marginRight: 8,
     },
     progressBarBg: {
-        height: 3,
-        backgroundColor: '#DFD8CC',
-        borderRadius: 1.5,
-        position: 'relative',
-        justifyContent: 'center',
+        flex: 1,
+        height: 6,
+        backgroundColor: '#E6E4FA',
+        borderRadius: 3,
+        marginRight: 10,
     },
     progressBarFill: {
-        height: 3,
+        height: 6,
         backgroundColor: '#826930',
-        borderRadius: 1.5,
-        width: '35%',
+      borderRadius: 3,
     },
-    progressBarDot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        backgroundColor: '#826930',
-        position: 'absolute',
-        left: '35%',
-        marginLeft: -4,
+    audioTime: {
+        fontSize: 11,
+        fontWeight: '600',
+        color: '#1A1A1D',
+    },
+    muteButton: {
+        padding: 4,
+        marginLeft: 4,
     },
     mainImage: {
         width: '100%',

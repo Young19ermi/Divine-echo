@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView, Platform, StatusBar } from 'react-native';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { Ionicons, Feather, MaterialIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Audio } from 'expo-av';
 import { styles } from './styles/details.styles';
@@ -24,6 +24,7 @@ export default function DetailsScreen() {
     const [duration, setDuration] = useState(1);
     const [count, setCount] = useState(0);
     const [isLiked, setIsLiked] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
 
     const [descriptiondata, setdescriptiondata] = useState<description | null>()
     const details_data = async () => {
@@ -101,6 +102,27 @@ export default function DetailsScreen() {
         }
     }
 
+    const skipBackward10 = async () => {
+        if (sound) {
+            const newPosition = Math.max(0, position - 10000);
+            await sound.setPositionAsync(newPosition);
+        }
+    };
+
+    const skipForward10 = async () => {
+        if (sound) {
+            const newPosition = Math.min(duration, position + 10000);
+            await sound.setPositionAsync(newPosition);
+        }
+    };
+
+    const toggleMute = async () => {
+        if (sound) {
+            await sound.setIsMutedAsync(!isMuted);
+            setIsMuted(!isMuted);
+        }
+    };
+
     useEffect(() => {
         return sound
             ? () => {
@@ -143,23 +165,38 @@ export default function DetailsScreen() {
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 {/* Audio Player Card */}
-                <View style={styles.audioCard}>
-                    <TouchableOpacity style={styles.playButton} onPress={togglePlayPause}>
-                        <Ionicons name={isPlaying ? "pause" : "play"} size={20} color="#FFF" style={{ marginLeft: isPlaying ? 0 : 2 }} />
-                    </TouchableOpacity>
-                    <View style={styles.audioInfo}>
-                        <View style={styles.audioTopRow}>
-                            <Text style={styles.audioLabel}>
-                                {title.length > max_words ? `${title.slice(0, max_words)}...` : title}
-                            </Text>
-                            <Text style={styles.audioTime}>{(position > 0 || duration > 1) ? `${formatTime(position)} / ${formatTime(duration)}` : '00:00 / 00:00'}</Text>
-                        </View>
-                        <View style={styles.progressBarBg}>
-                            <View style={[styles.progressBarFill, { width: `${progressPercentage}%` }]} />
-                            <View style={[styles.progressBarDot, { left: `${progressPercentage}%` }]} />
-                        </View>
-                    </View>
+                {/* Audio Player Card */}
+                <View style={styles.audioCardWrapper}>
+
+                            <View style={styles.audiotopRow}>
+                                {/* <Text style={styles.audioLabel}>
+                                    {title.length > max_words ? `${title.slice(0, max_words)}...` : title}
+                                </Text> */}
+                                </View>
+                                <View style={styles.audioCard}>
+                                <TouchableOpacity onPress={skipBackward10} style={styles.skipButton}>
+                                    <MaterialIcons name="replay-10" size={22} color="#1A1A1D" />
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.playButton} onPress={togglePlayPause}>
+                                    <Ionicons name={isPlaying ? "pause" : "play"} size={22} color="#FFF" style={{ marginLeft: isPlaying ? 0 : 3 }} />
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={skipForward10} style={styles.skipButton}>
+                                    <MaterialIcons name="forward-10" size={22} color="#1A1A1D" />
+                                </TouchableOpacity>
+
+                                <View style={styles.audioInfoWrapper}>
+                                    <View style={styles.progressBarBg}>
+                                        <View style={[styles.progressBarFill, { width: `${progressPercentage}%` }]} />
+                                    </View>
+                                    <Text style={styles.audioTime}>
+                                        {(position > 0 || duration > 1) ? `${formatTime(position)} / ${formatTime(duration)}` : '00:00 / 00:00'}
+                                    </Text>
+                                </View>
+                                </View>
                 </View>
+
                 {/* Image retrival */}
 
                 {/* Main Image */}
