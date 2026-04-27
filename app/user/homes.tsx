@@ -9,6 +9,7 @@ import { House, User } from 'lucide-react-native';
 import { supabase } from '../../lib/supabase';
 import { LinearGradient } from "expo-linear-gradient";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import NotificationsNoneSharpIcon from '@mui/icons-material/NotificationsNoneSharp';
 interface ReflectionData {
     audio_url: string;
     quote_title: string;
@@ -75,7 +76,7 @@ const ShimmerBlock = ({
 export default function HomeScreen() {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState('For You');
-    const tabs = ['For You', 'Gratitude', 'Peace', 'Wisdom'];
+    const tabs = ['For You', 'Seasonal', 'Teachings', 'Prayers', 'Devotionals'];
 
     const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -88,7 +89,7 @@ export default function HomeScreen() {
     const [reflection, setReflection] = useState<ReflectionData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-    
+
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     const fetchReflectionData = async () => {
@@ -202,14 +203,14 @@ export default function HomeScreen() {
                 }} pointerEvents="none">
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                         {/* <Feather name="check" size={24}  color="#C19B36" /> */}
-                       <MaterialCommunityIcons name="check-circle" size={28} color="#F8FAFC" />
+                        <MaterialCommunityIcons name="check-circle" size={28} color="#F8FAFC" />
                         <Text style={{ color: '#FFFFFF', fontWeight: 'bold', fontSize: 14 }}>Content Updated</Text>
-                        
+
                     </View>
                 </Animated.View>
 
-                <ScrollView 
-                    contentContainerStyle={styles.scrollContent} 
+                <ScrollView
+                    contentContainerStyle={styles.scrollContent}
                     showsVerticalScrollIndicator={false}
                     refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#C19B36" colors={["#C19B36"]} />
@@ -222,10 +223,7 @@ export default function HomeScreen() {
                         </TouchableOpacity>
                         <Text style={styles.headerTitle}>Divine Echo</Text>
                         <TouchableOpacity onPress={() => router.push('/user/admin')}>
-                            <Image
-                                source={{ uri: 'https://media.istockphoto.com/id/2153901491/vector/good-shepherd-the-story-of-jesus-christ-parable-of-the-lost-sheep-vector-religious.jpg?s=612x612&w=0&k=20&c=Oup0F7N87_ZR28MV4itpWg5gIN_E2QxiJSwDC65bR2c=' }}
-                                style={styles.avatar}
-                            />
+                            <Ionicons name="notifications-outline" size={24} color="#C19B36" />
                         </TouchableOpacity>
                     </View>
 
